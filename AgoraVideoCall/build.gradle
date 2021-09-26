@@ -1,0 +1,28 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:4.1.2"
+        //implementation 'com.github.agorabuilder:agora-full-preview:4.0.0'
+        //implementation fileTree(dir: 'libs', include: ['*.jar'])
+        // NOTE: iDo not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.0-alpha06"
+
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        maven { url 'https://www.jitpack.io' }
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
