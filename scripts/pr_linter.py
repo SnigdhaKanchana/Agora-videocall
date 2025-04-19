@@ -66,7 +66,7 @@ def main():
     pr_url = f"{GITHUB_API_URL}/repos/{repo}/pulls/{pr_number}"
     response = requests.get(pr_url, headers=headers)
     if response.status_code != 200:
-        print(f":x: Failed to fetch PR info. Status code: {response.status_code}")
+        print(f"❌ Failed to fetch PR info. Status code: {response.status_code}")
         sys.exit(1)
 
     pr_data = response.json()
@@ -78,18 +78,18 @@ def main():
 
     is_title_valid, title_error = validate_title(title, branch_name)
     if not is_title_valid:
-        errors.append(f":x: {title_error}")
+        errors.append(f"❌ {title_error}")
 
     body_errors, body_warnings = validate_body_structure(body)
-    errors.extend(f":x: {err}" for err in body_errors)
+    errors.extend(f"❌ {err}" for err in body_errors)
     for warn in body_warnings:
-        print(f":warning:  {warn}")
+        print(f"⚠️ {warn}")
 
     if errors:
         print("\n".join(errors))
         sys.exit(1)
 
-    print(":white_check_mark: PR title and description are valid.")
+    print("✅ PR title and description are valid.")
 
 if __name__ == "__main__":
     main()
