@@ -56,7 +56,20 @@ def validate_body_structure(body):
             warnings.append(f"Recommended section missing: `{sections[section]}`.")
 
     return errors, warnings
-
+    
+def post_comment(repo, pr_number, token, message):
+    url = f"https://api.github.com/repos/{repo}/issues/{pr_number}/comments"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    payload = {"body": message}
+    response = requests.post(url, headers=headers, json=payload)
+    if response.status_code != 201:
+        print(f":warning: Failed to post comment. Status: {response.status_code} — {response.text}")
+    else:
+        print(":speech_balloon: Comment posted successfully on the PR.")
+        
 def main():
     pr_number = os.environ["PR_NUMBER"]
     repo = os.environ["GITHUB_REPOSITORY"]
@@ -86,8 +99,12 @@ def main():
         print(f"⚠️ {warn}")
 
     if errors:
-        print("\n".join(errors))
-        sys.exit(1)
+    full_error_message = ":x: **PR validation failed:**\n\n" + "\n".join(errors)
+    if body_warnings:
+        full_error_message += "\n\n:warning: **Warnings:**\n" + "\n.join(f"- {w}" for w in body_warnings)
+    print(full_error_message)
+    post_comment(repo, pr_number, token, full_error_message)
+    sys.exit(1)
 
     print("✅ PR title and description are valid.")
 
