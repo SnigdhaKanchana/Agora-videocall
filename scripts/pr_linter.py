@@ -98,6 +98,10 @@ def main():
     for warn in body_warnings:
         print(f"⚠️ {warn}")
 
+    if pr_data.get("draft", False):
+        print(":warning: Skipping validation: PR is still in draft mode.")
+        sys.exit(0)
+    
     if errors:
         full_error_message = "❌ **PR validation failed:**\n\n" + "\n".join(errors)
         if body_warnings:
