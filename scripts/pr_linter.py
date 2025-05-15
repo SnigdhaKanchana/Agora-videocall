@@ -100,11 +100,11 @@ def main():
 
     if errors:
         full_error_message = "❌ **PR validation failed:**\n\n" + "\n".join(errors)
-    if body_warnings:
-        full_error_message += "\n\n⚠️ **Warnings:**\n" + "\n".join(f"- {w}" for w in body_warnings)
-    print(full_error_message)
-    post_comment(repo, pr_number, token, full_error_message)
-    sys.exit(1)
+        if body_warnings:
+            full_error_message += "\n\n⚠️ **Warnings:**\n" + "\n".join(f"- {w}" for w in body_warnings)
+        print(full_error_message)
+        post_comment(repo, pr_number, token, full_error_message)
+        sys.exit(1)
 
     print("✅ PR title and description are valid.")
 
