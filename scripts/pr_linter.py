@@ -83,6 +83,11 @@ def main():
         sys.exit(1)
 
     pr_data = response.json()
+    # Skip if it's still a draft
+    if pr_data.get("draft", False):
+        print("⚠️ Skipping validation: PR is still in draft mode.")
+        sys.exit(0)
+        
     title = pr_data["title"]
     body = pr_data.get("body", "")
     branch_name = pr_data["head"]["ref"]
@@ -97,10 +102,6 @@ def main():
     errors.extend(f"❌ {err}" for err in body_errors)
     for warn in body_warnings:
         print(f"⚠️ {warn}")
-
-    if pr_data.get("draft", False):
-        print(":warning: Skipping validation: PR is still in draft mode.")
-        sys.exit(0)
     
     if errors:
         full_error_message = "❌ **PR validation failed:**\n\n" + "\n".join(errors)
