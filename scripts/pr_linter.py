@@ -38,18 +38,26 @@ def validate_body_structure(body):
         errors.append("Missing required section: `### 1. Issue`.")
     else:
         issue_block = body.split(sections["1. Issue"])[1].split("###")[0]
-        if "Closes:" not in issue_block and "Related:" not in issue_block:
-            errors.append("`Issue` section must include `Closes:` or `Related:` link.")
+        closes_valid = re.search(r"Closes:\s*#\d+", issue_block)
+        related_valid = re.search(r"Related:\s*#\d+", issue_block)
+        if not (closes_valid or related_valid):
+            errors.append("`Issue` section must include `Closes: #<number>` or `Related: #<number>`.")
 
     # Mandatory: Description section
     if sections["2. Description"] not in body:
         errors.append("Missing required section: `### 2. Description of change`.")
     else:
         desc_block = body.split(sections["2. Description"])[1].split("###")[0]
-        desc_lines = [line for line in desc_block.strip().splitlines() if line.strip()]
+        desc_lines = [
+            line for line in desc_block.strip().splitlines()
+            if line.strip() and line.strip() not in ["•", "-", "*"]
+        ]
         if len(desc_lines) < 2:
             errors.append("`Description of change` must contain at least 2 lines.")
-
+        desc_word_count = sum(len(line.strip().split()) for line in desc_lines)
+        if desc_word_count < 10:
+            errors.append("Description of change must contain at least 10 meaningful words.")
+            
     # Optional: Warn if soft sections are missing
     for section in ["3. Testing", "4. Don’t forget", "5. Notes"]:
         if sections[section] not in body:
